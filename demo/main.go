@@ -1,9 +1,14 @@
 package main
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
+	"os"
+	"os/exec"
+	"strconv"
 	"strings"
+	"time"
 )
 
 func exists(m map[string]string, k string) (v string, ok bool) {
@@ -35,6 +40,16 @@ func findUser(users []user, name string) (v *user, err error) {
 		}
 	}
 	return nil, errors.New("not found")
+}
+
+type point struct {
+	x, y int
+}
+
+type userInfo struct {
+	Name  string
+	Age   int `json:"age"`
+	Hobby []string
 }
 
 func temp() {
@@ -94,14 +109,97 @@ func temp() {
 		return
 	}
 	fmt.Println(u.name)
+
+	s2 := "hello"
+	fmt.Println(strings.Contains(s2, "ll"))
+	fmt.Println(strings.Count(s2, "l"))
+	fmt.Println(strings.HasPrefix(s2, "hel"))
+	fmt.Println(strings.Index(s2, "ll"))
+	fmt.Println(strings.Join([]string{"he", "llo", "azz"}, ""))
+	fmt.Println(strings.Repeat(s2, 2))             //return a new string
+	fmt.Println(strings.Replace(s2, "e", "E", -1)) //var: string tbr r num, return a new string
+	fmt.Println(strings.Split("s2---b-c", "-"))    //can split empty string
+	fmt.Println(strings.ToLower("ABCDE"))
+	fmt.Println(strings.ToUpper("abcde"))
+	fmt.Println(len(s2))
+	fmt.Println(len("你好")) //Chinese chars
+
+	s3 := "hello"
+	n3 := 123
+	p3 := point{1, 2}
+	fmt.Printf("s=%v\n", s3)
+	fmt.Printf("n=%v\n", n3)
+	fmt.Printf("p=%v\n", p3)
+	fmt.Printf("p=%+v\n", p3)
+	fmt.Printf("p=%#v\n", p3)
+
+	f3 := 3.141592653
+	fmt.Println(f3)
+	fmt.Printf("%.2f\n", f3)
+
+	a4 := userInfo{Name: "n", Age: 18, Hobby: []string{"Golang", "Java"}}
+	buf, err := json.Marshal(a4)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(buf)
+	fmt.Println(string(buf))
+
+	buf, err = json.MarshalIndent(a4, "", "\t")
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(string(buf))
+
+	var b4 userInfo
+	err = json.Unmarshal(buf, &b4)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Printf("%#v\n", b4)
+
+	now := time.Now()
+	fmt.Println(now) //Current time, format yyyy-mm-dd hh:mm:ss + nsec nanoseconds
+
+	t5 := time.Date(2022, 8, 26, 21, 2, 0, 0, time.UTC)
+
+	fmt.Println(t5)
+	fmt.Println(t5.Year(), t5.Month(), t5.Day(), t5.Hour(), t5.Minute())
+	fmt.Println(t5.Format("2006-01-02 15:04:05"))
+	fmt.Println(t5.Format("06-Jan-2 3:4:5")) //other format
+
+	t51 := time.Date(2022, 8, 26, 22, 32, 30, 0, time.UTC)
+	diff := t51.Sub(t5)
+	fmt.Println(diff)
+
+	t52, err := time.Parse("2006-01-02 15:04:05", "2022-08-26 21:02:00")
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(t52 == t5)
+	fmt.Println(now.Unix())
+
+	f6, _ := strconv.ParseFloat("1.234", 64)
+	n6, _ := strconv.ParseInt("111", 10, 64)
+	n61, _ := strconv.ParseInt("111", 0, 64)
+	n62, _ := strconv.ParseInt("1000", 16, 64)  //n63 is same value but diff case
+	n63, _ := strconv.ParseInt("0x1000", 0, 64) // case base = 0, check prefix: 2 for 0b, 8 for 0 or 0o, 16 for 0x
+	fmt.Println(f6, n6, n61, n62, n63)
+	fmt.Println(strconv.Itoa(int(n6)))
+	n64, err := strconv.Atoi("AAA")
+	fmt.Println(n64, err)
+
+	fmt.Println(os.Args)
+	fmt.Println(os.Getenv("PATH"))
+	//fmt.Println(os.Setenv("key", "value)) //set env var
+
+	buf, err = exec.Command("grep", "127.0.0.1", "/etc/hosts").CombinedOutput()
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(string(buf))
 }
 
 func main() {
-	a := "hello"
-	fmt.Println(strings.Contains(a, "ll"))
-	fmt.Println(strings.Count(a, "l"))
-	fmt.Println(strings.HasPrefix(a, "hel"))
-	fmt.Println(strings.Index(a, "ll"))
-	fmt.Println(strings.Join([]string{"he", "llo", "azz"}, ""))
-	fmt.Println(strings.Repeat(a, 2))
+
 }
